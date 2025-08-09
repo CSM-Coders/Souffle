@@ -1,3 +1,28 @@
+ </head>
+ <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
+ </head>
+ 
+ <div class="text-center">
+    <h1>Courses</h1>
+ </div>
+ 
 
-  <h1>Courses Page</h1>
-  <p>(Aquí irá pronto el listado de todos los cursos.)</p>
+  <div class="row">
+    {% if courses %}
+      {% for c in courses %}
+        <div class="col-md-4">
+          <div class="card mb-3">
+            <div class="card-body">
+              <h5 class="card-title">{{ c.name }}</h5>
+              <p class="card-text">{{ c.category }}</p>
+              <p class="card-text">
+                <strong>${{ c.price }}</strong> • {{ c.duration }}
+              </p>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    {% else %}
+      <p>No courses yet.</p>
+    {% endif %}
+  </div>
