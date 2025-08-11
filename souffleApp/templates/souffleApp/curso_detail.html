@@ -12,12 +12,7 @@
         .curso-title {
             color: #b983ff;
             letter-spacing: 1px;
-            font-size: 2.7rem;
-            background: rgba(255,255,255,0.85);
-            display: inline-block;
-            padding: 0.4em 2em;
-            border-radius: 1em;
-            box-shadow: 0 2px 16px #fff6;
+            font-size: 3.2rem;
             font-weight: bold;
             margin-bottom: 2rem;
         }
@@ -33,10 +28,17 @@
 <body>
     <div class="container py-5">
         <div class="row justify-content-center">
-            <div class="col-12 col-md-10 col-lg-8 text-center">
-                <h1 class="curso-title">{{ curso.title }}</h1>
-                <div class="d-flex justify-content-center my-4">
-                    <img src="{{ curso.image.url }}" alt="{{ curso.title }}" class="img-fluid curso-img">
+            <div class="col-12 col-md-10 col-lg-8">
+                <div class="card shadow-lg p-4" style="border-radius: 1.5em; background: rgba(255,255,255,0.93);">
+                    <h1 class="curso-title text-center w-100">{{ curso.title }}</h1>
+                    <div class="row align-items-start mt-4">
+                        <div class="col-12 col-md-4 d-flex justify-content-center mb-3 mb-md-0">
+                            <img src="{{ curso.image.url }}" alt="{{ curso.title }}" class="img-fluid curso-img">
+                        </div>
+                        <div class="col-12 col-md-8">
+                            <p class="curso-description">{{ curso.long_description|linebreaks }}</p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
