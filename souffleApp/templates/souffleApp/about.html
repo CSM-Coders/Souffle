@@ -3,9 +3,75 @@
 <head>
     <meta charset="UTF-8">
     <title>About - SouffleApp</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
+    <style>
+        body {
+            background: linear-gradient(135deg, #faaecb 0%, #fcb0ea 100%);
+            min-height: 100vh;
+        }
+        .souffle-title {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            font-weight: 800;
+            color: #b983ff;
+            letter-spacing: 1px;
+            margin-bottom: 2rem;
+            background: rgba(255,255,255,0.85);
+            display: inline-block;
+            padding: 0.5em 2em;
+            border-radius: 1em;
+            box-shadow: 0 2px 16px #fff6;
+        }
+        .card {
+            border: none;
+            border-radius: 22px;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 4px 24px rgba(210,145,188,0.10), 0 1.5px 6px rgba(0,0,0,0.04);
+            background: linear-gradient(135deg, #ffe4f3 0%, #f3e8ff 100%);
+        }
+        .card:hover {
+            transform: translateY(-8px) scale(1.03);
+            box-shadow: 0 8px 32px rgba(210,145,188,0.18), 0 3px 12px rgba(0,0,0,0.10);
+        }
+        .card-title {
+            color: #b983ff;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        .card-text {
+            color: #7e6c6c;
+            font-size: 1rem;
+        }
+        .card-img-top {
+            border-top-left-radius: 22px;
+            border-top-right-radius: 22px;
+            background: #fff0f6;
+        }
+    </style>
 </head>
+{% include 'souffleApp/whatsapp_button.html' %}
 <body>
-    <h1>Acerca de SouffleApp</h1>
-    <p>Esta es la página "About" de SouffleApp. Aquí puedes poner información sobre tu proyecto, el equipo, o cualquier otro detalle relevante.</p>
+    <div class="container py-5">
+        <div class="d-flex justify-content-center mb-5">
+            <h1 class="souffle-title">Acerca de SouffleApp</h1>
+        </div>
+        <div class="card p-4 mx-auto" style="max-width: 800px;">
+            <p class="card-text">
+                <strong>Soufflé</strong> es un emprendimiento dedicado a ofrecer cursos y productos de repostería únicos, 
+                con un enfoque en calidad, creatividad y atención personalizada. A través de <em>SouffleApp</em>, 
+                llevamos nuestra experiencia a un entorno digital, permitiendo a los usuarios explorar, conocer 
+                y adquirir cursos de manera fácil y rápida.
+            </p>
+            <p class="card-text">
+                Puedes encontrarnos y seguir nuestras creaciones en Instagram:  
+                <a href="https://www.instagram.com/souffle.co/" target="_blank">@souffle.co</a> y  
+                <a href="https://www.instagram.com/susisouffle/" target="_blank">@susisouffle</a>.
+            </p>
+            <p class="card-text">
+                Si deseas más información o inscribirte en un curso, puedes escribirnos por WhatsApp:  
+                <a href="https://api.whatsapp.com/send?phone=573054882667&text=Hola!%20Estoy%20interesado%20en%20un%20producto%20%F0%9F%98%81" target="_blank">+57 305 488 2667</a>  
+                (Susana Gómez, fundadora de Soufflé).
+            </p>
+        </div>
+    </div>
 </body>
 </html>

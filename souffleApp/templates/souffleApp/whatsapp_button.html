@@ -1,0 +1,33 @@
+
+<a href="https://api.whatsapp.com/send?phone=573054882667&text=Hola!%20Estoy%20interesado%20en%20un%20producto%20%F0%9F%98%81"
+   class="whatsapp-float"
+   target="_blank">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="WhatsApp">
+</a>
+
+<style>
+.whatsapp-float {
+    position: fixed;
+    width: 60px;
+    height: 60px;
+    bottom: 20px;
+    right: 20px;
+    background-color: #25D366;
+    color: #FFF;
+    border-radius: 50%;
+    text-align: center;
+    box-shadow: 2px 2px 8px rgba(0,0,0,0.3);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s ease-in-out;
+}
+.whatsapp-float img {
+    width: 35px;
+    height: 35px;
+}
+.whatsapp-float:hover {
+    transform: scale(1.1);
+}
+</style>
