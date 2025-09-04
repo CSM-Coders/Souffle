@@ -6,11 +6,29 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
     <style>
         body {
-            background: linear-gradient(135deg, #ffd1e3 0%, #f8c4ec 100%);
+            background: linear-gradient(135deg, #ff97d9 0%, #ffc1ff 100%);
             min-height: 100vh;
         }
+        .btn-rosa {
+            background-color: #C93384;
+            color: #fff;
+            border: none;
+        }
+        .btn-rosa:hover, .btn-rosa:focus {
+            background-color: #a82a6a;
+            color: #fff;
+        }
+        .btn-rosa-claro {
+            background-color: #ff97d9;
+            color: #C93384;
+            border: none;
+        }
+        .btn-rosa-claro:hover, .btn-rosa-claro:focus {
+            background-color: #ffc1ff;
+            color: #C93384;
+        }
         .curso-title {
-            color: #b983ff;
+            color: #C93384;
             letter-spacing: 1px;
             font-size: 3.2rem;
             font-weight: bold;
@@ -33,8 +51,30 @@
                 <div class="card shadow-lg p-4" style="border-radius: 1.5em; background: rgba(255,255,255,0.93);">
                     <h1 class="curso-title text-center w-100">{{ curso.title }}</h1>
                     <div class="row align-items-start mt-4">
-                        <div class="col-12 col-md-4 d-flex justify-content-center mb-3 mb-md-0">
-                            <img src="{{ curso.image.url }}" alt="{{ curso.title }}" class="img-fluid curso-img">
+                        <div class="col-12 col-md-4 d-flex flex-column align-items-center mb-3 mb-md-0">
+                            <img src="{{ curso.image.url }}" alt="{{ curso.title }}" class="img-fluid curso-img mb-3">
+                            <button class="btn btn-rosa w-100" type="button" onclick="document.getElementById('horarios-box').style.display='block'">Ver Horarios</button>
+                            <div id="compra-exitosa" style="display:none;" class="alert alert-success text-center mt-2">¡Compra exitosa!</div>
+                            <div id="horarios-box" style="display:none; margin-top:1em; width:100%;">
+                                <h4 class="text-center">Horarios disponibles</h4>
+                                <ul class="list-group mb-3">
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        <span>10/09/2025 - 10:00 AM</span>
+                                        <span>Cupos: 5</span>
+                                        <button class="btn btn-rosa-claro btn-sm ms-2" onclick="mostrarCompraExitosa()">Comprar</button>
+                                    </li>
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        <span>12/09/2025 - 4:00 PM</span>
+                                        <span>Cupos: 3</span>
+                                        <button class="btn btn-rosa-claro btn-sm ms-2" onclick="mostrarCompraExitosa()">Comprar</button>
+                                    </li>
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        <span>15/09/2025 - 7:00 PM</span>
+                                        <span>Cupos: 2</span>
+                                        <button class="btn btn-rosa-claro btn-sm ms-2" onclick="mostrarCompraExitosa()">Comprar</button>
+                                    </li>
+                                </ul>
+                            </div>
                         </div>
                         <div class="col-12 col-md-8">
                             <p class="curso-description">{{ curso.long_description|linebreaks }}</p>
@@ -44,5 +84,14 @@
             </div>
         </div>
     </div>
+<script>
+function mostrarCompraExitosa() {
+    var mensaje = document.getElementById('compra-exitosa');
+    mensaje.style.display = 'block';
+    setTimeout(function() {
+        mensaje.style.display = 'none';
+    }, 2500);
+}
+</script>
 </body>
 </html>

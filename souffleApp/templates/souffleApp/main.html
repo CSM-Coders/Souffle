@@ -1,0 +1,64 @@
+{% extends 'souffleApp/base.html' %}
+{% block content %}
+<div class="main-container">
+    <h1 class="title">Bienvenido a Souffle</h1>
+    <div class="button-group">
+        <a href="{% url 'cursos_entry' %}" class="main-btn">Cursos</a>
+        <a href="{% url 'about' %}" class="main-btn">About Us</a>
+    </div>
+</div>
+<style>
+    .main-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 80vh;
+        background: linear-gradient(135deg, #ff97d9 0%, #ffc1ff 100%);
+        animation: fadeIn 1.2s;
+    }
+    .title {
+        font-size: 3rem;
+        margin-bottom: 2rem;
+        color: #C93384;
+        font-weight: bold;
+        letter-spacing: 2px;
+        animation: bounceIn 1s;
+    }
+    .button-group {
+        display: flex;
+        gap: 2rem;
+    }
+    .main-btn {
+        padding: 1.2rem 3rem;
+        font-size: 1.5rem;
+        border-radius: 2rem;
+        background: #e44f9c;
+        color: #fff;
+        text-decoration: none;
+        font-weight: 600;
+        box-shadow: 0 4px 24px #ff69b4;
+        transition: transform 0.2s, box-shadow 0.2s, background 0.3s;
+        animation: pulse 2s infinite;
+    }
+    .main-btn:hover {
+        background: #C93384;
+        transform: scale(1.08);
+        box-shadow: 0 8px 32px #ff97d9;
+    }
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+    @keyframes bounceIn {
+        0% { transform: scale(0.8); }
+        60% { transform: scale(1.1); }
+        100% { transform: scale(1); }
+    }
+    @keyframes pulse {
+        0% { box-shadow: 0 0 0 0 #ff97d9; }
+        70% { box-shadow: 0 0 0 20px #ffc1ff; }
+        100% { box-shadow: 0 0 0 0 #ffc1ff; }
+    }
+</style>
+{% endblock %}

@@ -23,8 +23,13 @@ from django.conf import settings
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', souffle.home, name='home'),
+    path('', souffle.main, name='main'),
     path('about/', souffle.about, name='about'),
+    path('main/', souffle.main, name='main'),
+    path('cursos/', souffle.cursos_entry, name='cursos_entry'),
+    path('login/', souffle.login_view, name='login'),
+    path('home/', souffle.home, name='home'),
+    path('signup/', souffle.signup_view, name='signup'),
     path('curso/<int:curso_id>/', souffle.curso_detail, name='curso_detail'),
 ]
 

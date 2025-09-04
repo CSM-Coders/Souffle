@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Souffle</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Montserrat', Arial, sans-serif;
+            background: linear-gradient(135deg, #ff97d9 0%, #ffc1ff 100%);
+            min-height: 100vh;
+            animation: fadeIn 1.2s;
+        }
+        .navbar {
+            width: 100%;
+            background: #fcb0ea;
+            color: #fff;
+            padding: 1rem 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 12px rgba(210,145,188,0.15);
+            animation: slideDown 1s;
+        }
+        .navbar-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            letter-spacing: 2px;
+            color: #b983ff;
+        }
+        .navbar-links a {
+            color: #b983ff;
+            text-decoration: none;
+            margin-left: 2rem;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: color 0.2s;
+        }
+        .navbar-links a:hover {
+            color: #faaecb;
+        }
+        .content {
+            margin: 2rem auto;
+            max-width: 900px;
+            background: linear-gradient(135deg, #ffe4f3 0%, #f3e8ff 100%);
+            border-radius: 1.5rem;
+            box-shadow: 0 2px 12px rgba(210,145,188,0.08);
+            padding: 2rem;
+            animation: fadeIn 1.2s;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        @keyframes slideDown {
+            from { transform: translateY(-60px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Barra de navegación eliminada -->
+    <div class="content">
+        {% block content %}{% endblock %}
+    </div>
+</body>
+</html>
