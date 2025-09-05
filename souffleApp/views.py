@@ -17,24 +17,22 @@ def cursos_entry(request):
 def login_view(request):
     from django.contrib.auth import authenticate, login
     from django.contrib import messages
-    from django.shortcuts import redirect
+    from django.contrib.auth.models import User
     if request.method == 'POST':
         email = request.POST.get('email')
         password = request.POST.get('password')
-        from django.contrib.auth.models import User
+        user = None
         try:
-            username = User.objects.get(email=email).username
+            user_obj = User.objects.get(email=email)
+            user = authenticate(request, username=user_obj.username, password=password)
         except User.DoesNotExist:
-            messages.error(request, 'Correo o contraseña incorrectos.')
-            return render(request, 'souffleApp/login.html')
-        user = authenticate(request, username=username, password=password)
+            user = None
         if user is not None:
             login(request, user)
-            from django.shortcuts import redirect
             return redirect('home')
         else:
             messages.error(request, 'Correo o contraseña incorrectos.')
-    # Si el usuario hace GET a /login?continuar=1, mostrar cursos sin login
+            return render(request, 'souffleApp/login.html')
     if request.GET.get('continuar') == '1':
         return redirect('home')
     return render(request, 'souffleApp/login.html')
