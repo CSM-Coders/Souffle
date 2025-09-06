@@ -9,7 +9,10 @@ def main(request):
 
 def home(request):
     souffleApp = SouffleApp.objects.all()
-    return render(request, 'souffleApp/home.html', {'souffleApp': souffleApp})
+    searchTerm = request.GET.get('searchCourse')
+    if searchTerm:
+        souffleApp = souffleApp.filter(title__icontains=searchTerm)
+    return render(request, 'souffleApp/home.html', {'souffleApp': souffleApp, 'searchTerm': searchTerm})
 
 def cursos_entry(request):
     return render(request, 'souffleApp/cursos_entry.html')
