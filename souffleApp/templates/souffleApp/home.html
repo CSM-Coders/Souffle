@@ -56,12 +56,13 @@
     <body>
         <div class="container mt-3">
             <div class="d-flex justify-content-end">
-                <form action="{% url 'logout' %}" method="POST" class="logout-btn">
-                    {% csrf_token %}
-                    <button type="submit" class="btn btn-danger btn-sm">Logout</button>
-                </form>
+                {% if user.is_authenticated %}
+                    <form action="{% url 'logout' %}" method="POST">
+                        {% csrf_token %}
+                        <button type="submit" class="nav-btn logout-btn">Cerrar Sesión</button>
+                    </form>
+                {% endif %}
             </div>
-        </div>
 
         <div class="container py-5">
             <div class="d-flex justify-content-center mb-5">
