@@ -5,8 +5,13 @@ class SouffleApp(models.Model):
     title = models.CharField(max_length=100)
     description = models.CharField(max_length=250)
     long_description = models.TextField(blank=True)
+    duration = models.CharField(max_length=50, blank=True)
+    learning_outcomes = models.TextField(blank=True)
+    materials = models.TextField(blank=True)
+    ingredients = models.TextField(blank=True)
+    price = models.CharField(max_length=150, blank=True)
     image = models.ImageField(upload_to='souffleApp/images/')
-    url = models.URLField(blank=True)
+    embedding = models.BinaryField(null=True, blank=True)
 
 class Horario(models.Model):
     curso = models.ForeignKey(SouffleApp, on_delete=models.CASCADE, related_name='horarios')

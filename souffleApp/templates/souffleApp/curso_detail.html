@@ -77,7 +77,12 @@
                             </div>
                         </div>
                         <div class="col-12 col-md-8">
-                            <p class="curso-description">{{ curso.long_description|linebreaks }}</p>
+                            <p><strong>Descripción:</strong><br>{{ curso.long_description|linebreaks }}</p>
+                            <p><strong>Duración:</strong><br>{{ curso.duration|linebreaks }}</p>
+                            <p><strong>Resultados de aprendizaje:</strong><br>{{ curso.learning_outcomes|linebreaks }}</p>
+                            <p><strong>Materiales:</strong><br>{{ curso.materials|linebreaks }}</p>
+                            <p><strong>Ingredientes:</strong><br>{{ curso.ingredients|linebreaks }}</p>
+                            <p><strong>Precio:</strong><br>{{ curso.price|linebreaks }}</p>
                         </div>
                     </div>
                 </div>
