@@ -1,6 +1,10 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from.models import SouffleApp
+import os
+import numpy as np
+from dotenv import load_dotenv
+from openai import OpenAI
 
 # Create your views here.
 
@@ -13,6 +17,41 @@ def home(request):
     if searchTerm:
         souffleApp = souffleApp.filter(title__icontains=searchTerm)
     return render(request, 'souffleApp/home.html', {'souffleApp': souffleApp, 'searchTerm': searchTerm})
+
+def semantic_search(request):
+    souffleApp = SouffleApp.objects.all()
+    semanticQuery = request.GET.get('semanticQuery')
+    best_course = None
+    similarity = None
+
+    if semanticQuery:
+        load_dotenv(os.path.join(os.path.dirname(__file__), '../openAI.env'))
+        api_key = os.environ.get('openai_apikey')
+        if not api_key:
+            return HttpResponse("OpenAI API key not found.", status=500)
+        client = OpenAI(api_key=api_key)
+        response = client.embeddings.create(
+            input=[semanticQuery],
+            model="text-embedding-3-small"
+        )
+        prompt_emb = np.array(response.data[0].embedding, dtype=np.float32)
+        max_similarity = -1
+        for course in souffleApp:
+            if course.embedding:
+                course_emb = np.frombuffer(course.embedding, dtype=np.float32)
+                sim = np.dot(prompt_emb, course_emb) / (np.linalg.norm(prompt_emb) * np.linalg.norm(course_emb))
+                if sim > max_similarity:
+                    max_similarity = sim
+                    best_course = course
+                    similarity = sim
+        souffleApp = [best_course] if best_course else []
+
+    return render(request, 'souffleApp/home.html', {
+        'souffleApp': souffleApp,
+        'semanticQuery': semanticQuery,
+        'best_course': best_course,
+        'similarity': similarity
+    })
 
 def cursos_entry(request):
     return render(request, 'souffleApp/cursos_entry.html')
