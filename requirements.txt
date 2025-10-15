@@ -1,3 +1,7 @@
 django
 Pillow 
 matplotlib
+openai
+python-dotenv
+numpy
+requests

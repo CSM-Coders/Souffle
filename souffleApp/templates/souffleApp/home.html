@@ -72,14 +72,26 @@
     <form action="">
         <div class="mb-3">
             <label for="searchCourse" class="form-label search-label">
-                Buscar Curso:
+                Buscar por Título
             </label>
             <input type="text" class="form-control" name="searchCourse"/>
         </div>
-        <button type="submit" class="btn btn-primary btn-search">Buscar</button>
+        <button type="submit" class="btn btn-primary btn-search">Buscar Título</button>
     </form>
     {% if searchTerm %}
     <p class="searching-text">Buscando {{searchTerm}}</p>
+    {% endif %}
+    <form action="">
+        <div class="mb-3">
+            <label for="semanticQuery" class="form-label search-label">
+                Buscar por Similitud:
+            </label>
+            <input type="text" class="form-control" name="semanticQuery"/>
+        </div>
+        <button type="submit" class="btn btn-primary btn-search">Buscar Similitud</button>
+    </form>
+    {% if semanticQuery %}
+    <p class="searching-text">Buscando {{semanticQuery}}</p>
     {% endif %}
             <div class="row justify-content-center g-4">
                 {% for curso in souffleApp %}
