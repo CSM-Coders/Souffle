@@ -1,6 +1,10 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse
-from.models import SouffleApp
+from django.urls import reverse
+from django.views.decorators.http import require_POST
+from django.utils.http import url_has_allowed_host_and_scheme
+from urllib.parse import urlencode
+from .models import SouffleApp, Favorite
 import os
 import numpy as np
 from dotenv import load_dotenv
@@ -16,7 +20,22 @@ def home(request):
     searchTerm = request.GET.get('searchCourse')
     if searchTerm:
         souffleApp = souffleApp.filter(title__icontains=searchTerm)
-    return render(request, 'souffleApp/home.html', {'souffleApp': souffleApp, 'searchTerm': searchTerm})
+
+    favorite_ids = []
+    if request.user.is_authenticated:
+        favorite_ids = list(
+            Favorite.objects.filter(user=request.user).values_list('curso_id', flat=True)
+        )
+
+    return render(
+        request,
+        'souffleApp/home.html',
+        {
+            'souffleApp': souffleApp,
+            'searchTerm': searchTerm,
+            'favorite_ids': favorite_ids,
+        },
+    )
 
 def semantic_search(request):
     souffleApp = SouffleApp.objects.all()
@@ -46,11 +65,18 @@ def semantic_search(request):
                     similarity = sim
         souffleApp = [best_course] if best_course else []
 
+    favorite_ids = []
+    if request.user.is_authenticated:
+        favorite_ids = list(
+            Favorite.objects.filter(user=request.user).values_list('curso_id', flat=True)
+        )
+
     return render(request, 'souffleApp/home.html', {
         'souffleApp': souffleApp,
         'semanticQuery': semanticQuery,
         'best_course': best_course,
-        'similarity': similarity
+        'similarity': similarity,
+        'favorite_ids': favorite_ids,
     })
 
 def cursos_entry(request):
@@ -60,6 +86,14 @@ def login_view(request):
     from django.contrib.auth import authenticate, login
     from django.contrib import messages
     from django.contrib.auth.models import User
+
+    next_url = request.GET.get('next') or request.POST.get('next')
+
+    def resolve_redirect_url(url):
+        if url and url_has_allowed_host_and_scheme(url, {request.get_host()}, request.is_secure()):
+            return url
+        return reverse('home')
+
     if request.method == 'POST':
         email = request.POST.get('email')
         password = request.POST.get('password')
@@ -71,13 +105,13 @@ def login_view(request):
             user = None
         if user is not None:
             login(request, user)
-            return redirect('home')
+            return redirect(resolve_redirect_url(next_url))
         else:
             messages.error(request, 'Correo o contraseña incorrectos.')
-            return render(request, 'souffleApp/login.html')
+            return render(request, 'souffleApp/login.html', {'next': next_url})
     if request.GET.get('continuar') == '1':
         return redirect('home')
-    return render(request, 'souffleApp/login.html')
+    return render(request, 'souffleApp/login.html', {'next': next_url})
 
 def signup_view(request):
     from django.contrib.auth.models import User
@@ -101,6 +135,29 @@ def about(request):
     return render(request, 'souffleApp/about.html')
 
 def curso_detail(request, curso_id):
-    from django.shortcuts import get_object_or_404
     curso = get_object_or_404(SouffleApp, id=curso_id)
-    return render(request, 'souffleApp/curso_detail.html', {'curso': curso})
+    favorite_ids = []
+    if request.user.is_authenticated:
+        favorite_ids = list(
+            Favorite.objects.filter(user=request.user).values_list('curso_id', flat=True)
+        )
+    return render(request, 'souffleApp/curso_detail.html', {'curso': curso, 'favorite_ids': favorite_ids})
+
+
+@require_POST
+def toggle_favorite(request, curso_id):
+    if not request.user.is_authenticated:
+        login_url = reverse('login')
+        next_target = request.POST.get('next') or request.get_full_path()
+        query = urlencode({'next': next_target})
+        return redirect(f"{login_url}?{query}")
+
+    curso = get_object_or_404(SouffleApp, id=curso_id)
+    favorite, created = Favorite.objects.get_or_create(user=request.user, curso=curso)
+    if not created:
+        favorite.delete()
+
+    redirect_to = request.POST.get('next')
+    if redirect_to and url_has_allowed_host_and_scheme(redirect_to, {request.get_host()}, request.is_secure()):
+        return redirect(redirect_to)
+    return redirect('home')

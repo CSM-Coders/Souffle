@@ -23,6 +23,20 @@ class Horario(models.Model):
         return f"{self.curso.title} - {self.fecha} {self.hora} (Cupos: {self.cupos})"
 
 from django.contrib.auth.models import User
+
+
+class Favorite(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='favorites')
+    curso = models.ForeignKey(SouffleApp, on_delete=models.CASCADE, related_name='favorited_by')
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('user', 'curso')
+
+    def __str__(self):
+        return f"{self.user.username} ❤ {self.curso.title}"
+
+
 class Compra(models.Model):
     usuario = models.ForeignKey(User, on_delete=models.CASCADE)
     curso = models.ForeignKey(SouffleApp, on_delete=models.CASCADE)

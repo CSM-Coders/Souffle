@@ -11,6 +11,7 @@
     {% endif %}
     <form method="post" class="auth-form">
         {% csrf_token %}
+        <input type="hidden" name="next" value="{{ next|default:'' }}" />
         <input type="email" name="email" placeholder="Correo electrónico" required class="auth-input" />
         <input type="password" name="password" placeholder="Contraseña" required class="auth-input" />
         <button type="submit" class="auth-btn">Entrar</button>

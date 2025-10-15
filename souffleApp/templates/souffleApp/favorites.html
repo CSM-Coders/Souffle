@@ -1,0 +1,22 @@
+{% extends "souffleApp/base.html" %}
+{% block content %}
+<h1>Your Favorites</h1>
+<div class="row">
+  {% for f in favorites %}
+    <div class="col-md-4">
+      <div class="card mb-3 h-100">
+        {% if f.course.image %}<img src="{{ f.course.image.url }}" class="card-img-top" alt="{{ f.course.name }}">{% endif %}
+        <div class="card-body">
+          <h5 class="card-title">
+            <a href="{% url 'course_detail' f.course.pk %}">{{ f.course.name }}</a>
+          </h5>
+          <p class="card-text">{{ f.course.category }}</p>
+          <p class="card-text"><strong>${{ f.course.price }}</strong> • {{ f.course.duration }}</p>
+        </div>
+      </div>
+    </div>
+  {% empty %}
+    <p>No favorites yet.</p>
+  {% endfor %}
+</div>
+{% endblock %}

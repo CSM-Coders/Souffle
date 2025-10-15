@@ -32,6 +32,7 @@ urlpatterns = [
     path('home/', souffle.home, name='home'),
     path('signup/', souffle.signup_view, name='signup'),
     path('curso/<int:curso_id>/', souffle.curso_detail, name='curso_detail'),
+    path('favoritos/<int:curso_id>/', souffle.toggle_favorite, name='toggle_favorite'),
     path('logout/', LogoutView.as_view(next_page='/login/'), name='logout'),
 ]
 
