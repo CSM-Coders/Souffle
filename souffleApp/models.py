@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 # Create your models here.
 class SouffleApp(models.Model):
@@ -22,7 +23,6 @@ class Horario(models.Model):
     def __str__(self):
         return f"{self.curso.title} - {self.fecha} {self.hora} (Cupos: {self.cupos})"
 
-from django.contrib.auth.models import User
 class Compra(models.Model):
     usuario = models.ForeignKey(User, on_delete=models.CASCADE)
     curso = models.ForeignKey(SouffleApp, on_delete=models.CASCADE)
@@ -31,3 +31,17 @@ class Compra(models.Model):
 
     def __str__(self):
         return f"{self.usuario.username} compró {self.curso.title} ({self.horario})"
+
+
+class Favorite(models.Model):
+    usuario = models.ForeignKey(User, on_delete=models.CASCADE, related_name='favorites')
+    curso = models.ForeignKey(SouffleApp, on_delete=models.CASCADE, related_name='favorited_by')
+    creado_en = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['usuario', 'curso'], name='unique_favorite_curso_usuario')
+        ]
+
+    def __str__(self):
+        return f"{self.usuario.username} marcó como favorito {self.curso.title}"

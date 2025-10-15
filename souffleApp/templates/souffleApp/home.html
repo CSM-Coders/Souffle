@@ -96,20 +96,60 @@
             <div class="row justify-content-center g-4">
                 {% for curso in souffleApp %}
                 <div class="col-12 col-sm-6 col-md-4 col-lg-4 d-flex justify-content-center">
-                    <a href="{% url 'curso_detail' curso.id %}" style="text-decoration: none; color: inherit; width: 100%;">
-                        <div class="card h-100" style="width: 22rem; cursor: pointer;">
-                            <img src="{{ curso.image.url }}" class="card-img-top" alt="{{ curso.title }}" style="height: 220px; object-fit: cover;">
-                            <div class="card-body d-flex flex-column align-items-center">
-                                <h5 class="card-title text-center">{{ curso.title }}</h5>
-                                <p class="card-text text-center">{{ curso.description }}</p>
+                    <div class="course-card-wrapper">
+                        <a href="{% url 'curso_detail' curso.id %}" class="card-link">
+                            <div class="card h-100 course-card">
+                                <img src="{{ curso.image.url }}" class="card-img-top" alt="{{ curso.title }}">
+                                <div class="card-body d-flex flex-column align-items-center">
+                                    <h5 class="card-title text-center">{{ curso.title }}</h5>
+                                    <p class="card-text text-center">{{ curso.description }}</p>
+                                </div>
                             </div>
+                        </a>
+                        <div class="favorite-action">
+                            {% if user.is_authenticated %}
+                                <form method="post" action="{% url 'toggle_favorite' curso.id %}" class="favorite-form">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                                    {% if curso.id in favorite_ids %}
+                                        <button type="submit" class="btn favorite-btn favorite-btn-active">En favoritos</button>
+                                    {% else %}
+                                        <button type="submit" class="btn favorite-btn">Añadir a favoritos</button>
+                                    {% endif %}
+                                </form>
+                            {% else %}
+                                <a class="btn favorite-btn" href="{% url 'login' %}?next={{ request.get_full_path|urlencode }}">Añadir a favoritos</a>
+                            {% endif %}
                         </div>
-                    </a>
+                    </div>
                 </div>
                 {% endfor %}
             </div>
         </div>
         <style>
+            .course-card-wrapper {
+                width: 100%;
+                max-width: 22rem;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+            }
+            .card-link {
+                text-decoration: none;
+                color: inherit;
+                width: 100%;
+            }
+            .course-card {
+                width: 100%;
+                cursor: pointer;
+            }
+            .card-img-top {
+                border-top-left-radius: 22px;
+                border-top-right-radius: 22px;
+                background: #fff0f6;
+                height: 220px;
+                object-fit: cover;
+            }
             .navbar-home {
                 width: 100%;
                 background: #fcb0ea;
@@ -150,7 +190,7 @@
                 color: #fff;
                 font-weight: 600;
                 transition: background 0.2s, transform 0.2s;
-                margin-bottom: 0.8rem; 
+                margin-bottom: 0.8rem;
             }
             .btn-search:hover {
                 background: #C93384;
@@ -159,6 +199,36 @@
             .searching-text {
                 color: #C93384;
                 font-weight: 600;
+            }
+            .favorite-action {
+                width: 100%;
+                display: flex;
+                justify-content: center;
+                margin-top: 0.75rem;
+            }
+            .favorite-form {
+                width: 100%;
+            }
+            .favorite-btn {
+                width: 100%;
+                background: #fff0f6;
+                color: #C93384;
+                border-radius: 1rem;
+                font-weight: 600;
+                border: 1px solid #f4a8d8;
+                transition: transform 0.2s, background 0.2s, color 0.2s;
+            }
+            .favorite-btn:hover {
+                transform: scale(1.03);
+                background: #e44f9c;
+                color: #fff;
+            }
+            .favorite-btn-active {
+                background: #e44f9c;
+                color: #fff;
+            }
+            .favorite-btn-active:hover {
+                background: #c93384;
             }
         </style>
     </body>

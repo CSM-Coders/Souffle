@@ -1,6 +1,10 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse
-from.models import SouffleApp
+from django.contrib.auth.decorators import login_required
+from django.utils.http import url_has_allowed_host_and_scheme
+from django.db import OperationalError, ProgrammingError
+from django.contrib import messages
+from .models import SouffleApp, Favorite
 import os
 import numpy as np
 from dotenv import load_dotenv
@@ -11,12 +15,32 @@ from openai import OpenAI
 def main(request):
     return render(request, 'souffleApp/main.html')
 
+def _safe_favorite_ids(user):
+    if not user.is_authenticated:
+        return []
+    try:
+        return list(
+            Favorite.objects.filter(usuario=user).values_list('curso_id', flat=True)
+        )
+    except (OperationalError, ProgrammingError):
+        return []
+
+
 def home(request):
     souffleApp = SouffleApp.objects.all()
     searchTerm = request.GET.get('searchCourse')
     if searchTerm:
         souffleApp = souffleApp.filter(title__icontains=searchTerm)
-    return render(request, 'souffleApp/home.html', {'souffleApp': souffleApp, 'searchTerm': searchTerm})
+    favorite_ids = _safe_favorite_ids(request.user)
+    return render(
+        request,
+        'souffleApp/home.html',
+        {
+            'souffleApp': souffleApp,
+            'searchTerm': searchTerm,
+            'favorite_ids': favorite_ids,
+        },
+    )
 
 def semantic_search(request):
     souffleApp = SouffleApp.objects.all()
@@ -46,11 +70,14 @@ def semantic_search(request):
                     similarity = sim
         souffleApp = [best_course] if best_course else []
 
+    favorite_ids = _safe_favorite_ids(request.user)
+
     return render(request, 'souffleApp/home.html', {
         'souffleApp': souffleApp,
         'semanticQuery': semanticQuery,
         'best_course': best_course,
-        'similarity': similarity
+        'similarity': similarity,
+        'favorite_ids': favorite_ids,
     })
 
 def cursos_entry(request):
@@ -58,8 +85,8 @@ def cursos_entry(request):
 
 def login_view(request):
     from django.contrib.auth import authenticate, login
-    from django.contrib import messages
     from django.contrib.auth.models import User
+    next_url = request.POST.get('next') or request.GET.get('next')
     if request.method == 'POST':
         email = request.POST.get('email')
         password = request.POST.get('password')
@@ -71,17 +98,18 @@ def login_view(request):
             user = None
         if user is not None:
             login(request, user)
+            if next_url and url_has_allowed_host_and_scheme(next_url, {request.get_host()}, require_https=request.is_secure()):
+                return redirect(next_url)
             return redirect('home')
         else:
             messages.error(request, 'Correo o contraseña incorrectos.')
-            return render(request, 'souffleApp/login.html')
+            return render(request, 'souffleApp/login.html', {'next': next_url})
     if request.GET.get('continuar') == '1':
         return redirect('home')
-    return render(request, 'souffleApp/login.html')
+    return render(request, 'souffleApp/login.html', {'next': next_url})
 
 def signup_view(request):
     from django.contrib.auth.models import User
-    from django.contrib import messages
     if request.method == 'POST':
         username = request.POST.get('username')
         email = request.POST.get('email')
@@ -101,6 +129,29 @@ def about(request):
     return render(request, 'souffleApp/about.html')
 
 def curso_detail(request, curso_id):
-    from django.shortcuts import get_object_or_404
     curso = get_object_or_404(SouffleApp, id=curso_id)
-    return render(request, 'souffleApp/curso_detail.html', {'curso': curso})
+    is_favorite = False
+    if request.user.is_authenticated:
+        try:
+            is_favorite = Favorite.objects.filter(usuario=request.user, curso=curso).exists()
+        except (OperationalError, ProgrammingError):
+            is_favorite = False
+    return render(request, 'souffleApp/curso_detail.html', {'curso': curso, 'is_favorite': is_favorite})
+
+
+@login_required
+def toggle_favorite(request, curso_id):
+    if request.method != 'POST':
+        return redirect('home')
+
+    curso = get_object_or_404(SouffleApp, id=curso_id)
+    try:
+        favorite, created = Favorite.objects.get_or_create(usuario=request.user, curso=curso)
+        if not created:
+            favorite.delete()
+    except (OperationalError, ProgrammingError):
+        messages.error(request, 'No se pudo actualizar tus favoritos. Intenta nuevamente más tarde.')
+    next_url = request.POST.get('next')
+    if next_url and url_has_allowed_host_and_scheme(next_url, {request.get_host()}, require_https=request.is_secure()):
+        return redirect(next_url)
+    return redirect('home')

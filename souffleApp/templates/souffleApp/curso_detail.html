@@ -41,6 +41,28 @@
             background: #fff0f6;
             border-radius: 1.2rem;
         }
+        .favorite-btn {
+            margin-top: 1rem;
+            width: 100%;
+            background: #fff0f6;
+            color: #C93384;
+            border-radius: 1rem;
+            font-weight: 600;
+            border: 1px solid #f4a8d8;
+            transition: transform 0.2s, background 0.2s, color 0.2s;
+        }
+        .favorite-btn:hover {
+            transform: scale(1.03);
+            background: #e44f9c;
+            color: #fff;
+        }
+        .favorite-btn-active {
+            background: #e44f9c;
+            color: #fff;
+        }
+        .favorite-btn-active:hover {
+            background: #c93384;
+        }
     </style>
 </head>
 {% include 'souffleApp/whatsapp_button.html' %}
@@ -54,6 +76,19 @@
                         <div class="col-12 col-md-4 d-flex flex-column align-items-center mb-3 mb-md-0">
                             <img src="{{ curso.image.url }}" alt="{{ curso.title }}" class="img-fluid curso-img mb-3">
                             <button class="btn btn-rosa w-100" type="button" onclick="document.getElementById('horarios-box').style.display='block'">Ver Horarios</button>
+                            {% if user.is_authenticated %}
+                            <form method="post" action="{% url 'toggle_favorite' curso.id %}" class="w-100">
+                                {% csrf_token %}
+                                <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                                {% if is_favorite %}
+                                <button type="submit" class="btn favorite-btn favorite-btn-active">En favoritos</button>
+                                {% else %}
+                                <button type="submit" class="btn favorite-btn">Añadir a favoritos</button>
+                                {% endif %}
+                            </form>
+                            {% else %}
+                            <a class="btn favorite-btn w-100" href="{% url 'login' %}?next={{ request.get_full_path|urlencode }}">Añadir a favoritos</a>
+                            {% endif %}
                             <div id="compra-exitosa" style="display:none;" class="alert alert-success text-center mt-2">¡Compra exitosa!</div>
                             <div id="horarios-box" style="display:none; margin-top:1em; width:100%;">
                                 <h4 class="text-center">Horarios disponibles</h4>
