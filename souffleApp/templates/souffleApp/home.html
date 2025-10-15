@@ -96,15 +96,32 @@
             <div class="row justify-content-center g-4">
                 {% for curso in souffleApp %}
                 <div class="col-12 col-sm-6 col-md-4 col-lg-4 d-flex justify-content-center">
-                    <a href="{% url 'curso_detail' curso.id %}" style="text-decoration: none; color: inherit; width: 100%;">
-                        <div class="card h-100" style="width: 22rem; cursor: pointer;">
+                    <div class="card h-100 position-relative" style="width: 22rem;">
+                        <a href="{% url 'curso_detail' curso.id %}" class="course-link">
                             <img src="{{ curso.image.url }}" class="card-img-top" alt="{{ curso.title }}" style="height: 220px; object-fit: cover;">
-                            <div class="card-body d-flex flex-column align-items-center">
-                                <h5 class="card-title text-center">{{ curso.title }}</h5>
-                                <p class="card-text text-center">{{ curso.description }}</p>
-                            </div>
+                        </a>
+                        <div class="card-body d-flex flex-column align-items-center text-center">
+                            <a href="{% url 'curso_detail' curso.id %}" class="course-link">
+                                <h5 class="card-title">{{ curso.title }}</h5>
+                            </a>
+                            <p class="card-text">{{ curso.description }}</p>
+                            <form method="post" action="{% url 'toggle_favorite' curso.id %}" class="mt-auto w-100">
+                                {% csrf_token %}
+                                <input type="hidden" name="next" value="{{ request.get_full_path }}" />
+                                <button type="submit" class="btn btn-favorite {% if curso.id in favorite_ids %}btn-favorite-active{% endif %} w-100">
+                                    {% if curso.id in favorite_ids %}
+                                        Quitar de favoritos
+                                    {% else %}
+                                        Agregar a favoritos
+                                    {% endif %}
+                                </button>
+                            </form>
                         </div>
-                    </a>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="col-12">
+                    <p class="text-center text-muted">No se encontraron cursos que coincidan con tu búsqueda.</p>
                 </div>
                 {% endfor %}
             </div>
@@ -139,6 +156,28 @@
                 background: #faaecb;
                 color: #fff;
                 transform: scale(1.05);
+            }
+            .course-link {
+                text-decoration: none;
+                color: inherit;
+                display: block;
+            }
+            .btn-favorite {
+                background: #fff0f6;
+                border: 1px solid #e44f9c;
+                color: #e44f9c;
+                font-weight: 600;
+                border-radius: 1rem;
+                transition: background 0.2s, color 0.2s, transform 0.2s;
+            }
+            .btn-favorite:hover {
+                background: #e44f9c;
+                color: #fff;
+                transform: scale(1.02);
+            }
+            .btn-favorite-active {
+                background: #e44f9c;
+                color: #fff;
             }
             .search-label {
                 font-weight: bold;
