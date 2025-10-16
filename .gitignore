@@ -5,6 +5,3 @@ gemini.env
 email.env
 *.env
 .env
-
-# Database
-db.sqlite3
