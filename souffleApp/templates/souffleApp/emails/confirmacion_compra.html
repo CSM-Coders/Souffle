@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Confirmación de Compra - SouffleApp</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f9f9f9;
+        }
+        .email-container {
+            background: linear-gradient(135deg, #ff97d9 0%, #ffc1ff 100%);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 4px 20px rgba(210,145,188,0.15);
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .logo {
+            background: #ffc1ff;
+            display: inline-block;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-size: 28px;
+            font-weight: bold;
+            color: #C93384;
+            letter-spacing: 1px;
+            box-shadow: 0 2px 16px #ff69b4;
+        }
+        .confirmation-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin: 20px 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .course-title {
+            color: #C93384;
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        .info-section {
+            margin: 20px 0;
+            padding: 15px;
+            background: #f8f4ff;
+            border-radius: 10px;
+            border-left: 4px solid #C93384;
+        }
+        .info-label {
+            font-weight: bold;
+            color: #7e6c6c;
+            margin-bottom: 5px;
+        }
+        .info-value {
+            color: #333;
+            margin-bottom: 10px;
+        }
+        .price-highlight {
+            background: linear-gradient(135deg, #ff69b4, #ff1493);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+            margin: 20px 0;
+        }
+        .schedule-info {
+            background: #e8f5e8;
+            border: 2px solid #4caf50;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            color: #666;
+            font-size: 14px;
+        }
+        .contact-info {
+            background: #fff0f6;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        .whatsapp-link {
+            color: #25d366;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .instagram-link {
+            color: #e4405f;
+            text-decoration: none;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <div class="header">
+            <div class="logo">🧁 SouffleApp</div>
+            <h1 style="color: white; margin-top: 15px;">¡Compra Confirmada!</h1>
+        </div>
+
+        <div class="confirmation-card">
+            <h2 class="course-title">{{ curso.title }}</h2>
+            
+            <div class="info-section">
+                <div class="info-label">📝 Descripción:</div>
+                <div class="info-value">{{ curso.description }}</div>
+            </div>
+
+            {% if curso.long_description %}
+            <div class="info-section">
+                <div class="info-label">📖 Detalles del curso:</div>
+                <div class="info-value">{{ curso.long_description|linebreaks }}</div>
+            </div>
+            {% endif %}
+
+            <div class="schedule-info">
+                <div class="info-label">🗓️ Información del horario:</div>
+                <div class="info-value">
+                    <strong>📅 Fecha:</strong> {{ horario.fecha|date:"d/m/Y" }}<br>
+                    <strong>🕒 Hora:</strong> {{ horario.hora|time:"H:i" }}<br>
+                    <strong>👥 Cupos disponibles:</strong> {{ horario.cupos }} personas
+                </div>
+            </div>
+
+            {% if curso.duration %}
+            <div class="info-section">
+                <div class="info-label">⏱️ Duración:</div>
+                <div class="info-value">{{ curso.duration }}</div>
+            </div>
+            {% endif %}
+
+            {% if curso.learning_outcomes %}
+            <div class="info-section">
+                <div class="info-label">🎯 Objetivos de aprendizaje:</div>
+                <div class="info-value">{{ curso.learning_outcomes|linebreaks }}</div>
+            </div>
+            {% endif %}
+
+            {% if curso.materials %}
+            <div class="info-section">
+                <div class="info-label">🛠️ Materiales necesarios:</div>
+                <div class="info-value">{{ curso.materials|linebreaks }}</div>
+            </div>
+            {% endif %}
+
+            {% if curso.ingredients %}
+            <div class="info-section">
+                <div class="info-label">🥄 Ingredientes:</div>
+                <div class="info-value">{{ curso.ingredients|linebreaks }}</div>
+            </div>
+            {% endif %}
+
+            <div class="price-highlight">
+                💰 Precio: {{ curso.price }}
+            </div>
+
+            <div class="contact-info">
+                <h3 style="color: #C93384; margin-top: 0;">📞 Información de contacto</h3>
+                <p>
+                    <strong>WhatsApp:</strong> 
+                    <a href="https://api.whatsapp.com/send?phone=573054882667&text=Hola!%20Acabo%20de%20comprar%20el%20curso%20de%20{{ curso.title|urlencode }}%20🎂" 
+                       class="whatsapp-link">+57 305 488 2667</a>
+                </p>
+                <p>
+                    <strong>Instagram:</strong>
+                    <a href="https://www.instagram.com/souffle.co/" class="instagram-link">@souffle.co</a> | 
+                    <a href="https://www.instagram.com/susisouffle/" class="instagram-link">@susisouffle</a>
+                </p>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>¡Gracias por elegir SouffleApp! 🎉</p>
+            <p>Nos vemos en el curso. ¡Será una experiencia deliciosa! 🧁✨</p>
+            <p><em>Este es un email automático, por favor no respondas a este mensaje.</em></p>
+        </div>
+    </div>
+</body>
+</html>

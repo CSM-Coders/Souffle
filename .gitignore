@@ -1,6 +1,8 @@
 ﻿"*.pyc" 
 __pycache__/
 openAI.env
+gemini.env
+email.env
 *.env
 .env
 

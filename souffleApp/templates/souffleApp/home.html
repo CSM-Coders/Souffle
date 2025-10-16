@@ -57,6 +57,9 @@
         <div class="container mt-3">
             <div class="d-flex justify-content-end">
                 {% if user.is_authenticated %}
+                    {% if is_admin %}
+                        <a href="{% url 'estadisticas' %}" class="nav-btn me-2">Estadísticas</a>
+                    {% endif %}
                     <form action="{% url 'logout' %}" method="POST">
                         {% csrf_token %}
                         <button type="submit" class="nav-btn logout-btn">Cerrar Sesión</button>
@@ -140,7 +143,7 @@
                 z-index: 10;
             }
             .nav-btn {
-                color: #b983ff;
+                color: #C93384;
                 background: #fff0f6;
                 border: none;
                 border-radius: 1rem;

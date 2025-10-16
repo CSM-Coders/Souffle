@@ -1,7 +1,7 @@
 django
 Pillow 
 matplotlib
-openai
+google-generativeai
 python-dotenv
 numpy
 requests

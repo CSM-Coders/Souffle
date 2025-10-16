@@ -46,11 +46,33 @@
             border-top-right-radius: 22px;
             background: #fff0f6;
         }
+        .nav-btn {
+            color: #C93384;
+            background: #fff0f6;
+            border: none;
+            border-radius: 1rem;
+            padding: 0.7rem 2rem;
+            margin-left: 1rem;
+            font-weight: 700;
+            font-size: 1.1rem;
+            text-decoration: none;
+            box-shadow: 0 2px 8px rgba(210,145,188,0.08);
+            transition: background 0.2s, color 0.2s, transform 0.2s;
+        }
+        .nav-btn:hover {
+            background: #faaecb;
+            color: #fff;
+            transform: scale(1.05);
+        }
     </style>
 </head>
 {% include 'souffleApp/whatsapp_button.html' %}
 <body>
-    <!-- Barra de navegación eliminada -->
+    <div class="container mt-3">
+        <div class="d-flex justify-content-end">
+            <a href="{% url 'main' %}" class="nav-btn">Volver al Inicio</a>
+        </div>
+    </div>
     <div class="container py-5">
         <div class="d-flex justify-content-center mb-5">
             <h1 class="souffle-title">Acerca de SouffleApp</h1>
@@ -74,37 +96,5 @@
             </p>
         </div>
     </div>
-    <style>
-        .navbar-home {
-            width: 100%;
-            background: #fcb0ea;
-            display: flex;
-            justify-content: flex-end;
-            align-items: center;
-            padding: 1rem 2rem;
-            box-shadow: 0 2px 12px rgba(210,145,188,0.10);
-            position: sticky;
-            top: 0;
-            z-index: 10;
-        }
-        .nav-btn {
-            color: #b983ff;
-            background: #fff0f6;
-            border: none;
-            border-radius: 1rem;
-            padding: 0.7rem 2rem;
-            margin-left: 1rem;
-            font-weight: 700;
-            font-size: 1.1rem;
-            text-decoration: none;
-            box-shadow: 0 2px 8px rgba(210,145,188,0.08);
-            transition: background 0.2s, color 0.2s, transform 0.2s;
-        }
-        .nav-btn:hover {
-            background: #faaecb;
-            color: #fff;
-            transform: scale(1.05);
-        }
-    </style>
 </body>
 </html>

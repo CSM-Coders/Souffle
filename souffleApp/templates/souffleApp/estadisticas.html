@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Estadísticas - SouffleApp</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            background: linear-gradient(135deg, #ff97d9 0%, #ffc1ff 100%);
+            min-height: 100vh;
+        }
+        .souffle-title {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            font-weight: 800;
+            color: #C93384;
+            letter-spacing: 1px;
+            margin-bottom: 2rem;
+            background: #ffc1ff;
+            display: inline-block;
+            padding: 0.5em 2em;
+            border-radius: 1em;
+            box-shadow: 0 2px 16px #ff69b4;
+        }
+        .stats-card {
+            border: none;
+            border-radius: 22px;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 4px 24px rgba(210,145,188,0.10), 0 1.5px 6px rgba(0,0,0,0.04);
+            background: linear-gradient(135deg, #ffe4f3 0%, #f3e8ff 100%);
+            margin-bottom: 2rem;
+        }
+        .stats-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 8px 32px rgba(210,145,188,0.18), 0 3px 12px rgba(0,0,0,0.10);
+        }
+        .stats-number {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: #C93384;
+        }
+        .stats-label {
+            color: #7e6c6c;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+        .chart-container {
+            position: relative;
+            background: white;
+            border-radius: 22px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 24px rgba(210,145,188,0.10);
+            margin-bottom: 2rem;
+        }
+        .nav-btn {
+            color: #C93384;
+            background: #fff0f6;
+            border: none;
+            border-radius: 1rem;
+            padding: 0.7rem 2rem;
+            margin-left: 1rem;
+            font-weight: 700;
+            font-size: 1.1rem;
+            text-decoration: none;
+            box-shadow: 0 2px 8px rgba(210,145,188,0.08);
+            transition: background 0.2s, color 0.2s, transform 0.2s;
+        }
+        .nav-btn:hover {
+            background: #faaecb;
+            color: #fff;
+            transform: scale(1.05);
+        }
+        .best-course-highlight {
+            background: linear-gradient(135deg, #ff69b4, #ff1493);
+            color: white;
+            padding: 1rem;
+            border-radius: 15px;
+            text-align: center;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 20px rgba(255, 105, 180, 0.3);
+        }
+        .navbar-stats {
+            width: 100%;
+            background: #fcb0ea;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 12px rgba(210,145,188,0.10);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        .navbar-title {
+            color: #C93384;
+            font-weight: 700;
+            font-size: 1.5rem;
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar-stats">
+        <h1 class="navbar-title">Panel de Estadísticas - Administrador</h1>
+        <div>
+            <a href="{% url 'home' %}" class="nav-btn"> Volver al Inicio</a>
+            <form action="{% url 'logout' %}" method="POST" style="display: inline;">
+                {% csrf_token %}
+                <button type="submit" class="nav-btn">Cerrar Sesión</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="container py-5">
+        <div class="d-flex justify-content-center mb-5">
+            <h1 class="souffle-title">Estadísticas de Ventas de Cursos</h1>
+        </div>
+
+        <!-- Curso más vendido destacado -->
+        {% if curso_mas_vendido %}
+        <div class="best-course-highlight">
+            <h3>🏆 Curso Más Vendido</h3>
+            <h2>{{ curso_mas_vendido.nombre }}</h2>
+            <p class="mb-0"><strong>{{ curso_mas_vendido.ventas }} ventas reales</strong></p>
+            <p class="mb-0"><small>Ingresos estimados: ${{ curso_mas_vendido.ingresos|floatformat:0 }}</small></p>
+        </div>
+        {% elif not hay_datos %}
+        <div class="alert alert-info text-center">
+            <h4>📊 ¡Comienza a vender!</h4>
+            <p>Aún no hay ventas registradas. Las estadísticas aparecerán aquí cuando los usuarios comiencen a comprar cursos.</p>
+        </div>
+        {% endif %}
+
+        <!-- Tarjetas de estadísticas -->
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="card stats-card text-center p-3">
+                    <div class="stats-number">{{ total_ventas }}</div>
+                    <div class="stats-label">Ventas Reales</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card stats-card text-center p-3">
+                    <div class="stats-number">{{ total_cursos }}</div>
+                    <div class="stats-label">Cursos con Ventas</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card stats-card text-center p-3">
+                    <div class="stats-number">${{ total_ingresos|floatformat:0 }}</div>
+                    <div class="stats-label">Ingresos Estimados</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card stats-card text-center p-3">
+                    <div class="stats-number">{{ promedio_ventas }}</div>
+                    <div class="stats-label">Promedio por Curso</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Gráficos -->
+        <div class="row">
+            <div class="col-lg-6">
+                <div class="chart-container">
+                    <h4 class="text-center mb-3" style="color: #C93384;">Ventas por Curso</h4>
+                    <canvas id="cursosChart" width="400" height="400"></canvas>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="chart-container">
+                    <h4 class="text-center mb-3" style="color: #C93384;">Tendencia de Ventas (Últimos 6 Meses)</h4>
+                    <canvas id="ventasMensualChart" width="400" height="400"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tabla detallada -->
+        {% if hay_datos %}
+        <div class="chart-container">
+            <h4 class="text-center mb-3" style="color: #C93384;">Detalles de Ventas Reales por Curso</h4>
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead style="background-color: #ffc1ff;">
+                        <tr>
+                            <th>Posición</th>
+                            <th>Curso</th>
+                            <th>Ventas Reales</th>
+                            <th>Ingresos Estimados</th>
+                            <th>Porcentaje del Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for curso_data in cursos_data %}
+                        <tr>
+                            <td>
+                                {% if forloop.counter == 1 %}
+                                    🥇 {{ forloop.counter }}
+                                {% elif forloop.counter == 2 %}
+                                    🥈 {{ forloop.counter }}
+                                {% elif forloop.counter == 3 %}
+                                    🥉 {{ forloop.counter }}
+                                {% else %}
+                                    {{ forloop.counter }}
+                                {% endif %}
+                            </td>
+                            <td><strong>{{ curso_data.nombre }}</strong></td>
+                            <td>{{ curso_data.ventas }}</td>
+                            <td>${{ curso_data.ingresos|floatformat:0 }}</td>
+                            <td>{% widthratio curso_data.ventas total_ventas 100 %}%</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Compras recientes -->
+        <div class="chart-container">
+            <h4 class="text-center mb-3" style="color: #C93384;">Compras Recientes</h4>
+            <div class="table-responsive">
+                <table class="table table-sm">
+                    <thead style="background-color: #ffe4f3;">
+                        <tr>
+                            <th>Usuario</th>
+                            <th>Curso</th>
+                            <th>Fecha del Curso</th>
+                            <th>Fecha de Compra</th>
+                            <th>Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for compra in compras_recientes %}
+                        <tr>
+                            <td>{{ compra.nombre_usuario }}</td>
+                            <td>{{ compra.nombre_curso }}</td>
+                            <td>{{ compra.fecha_curso|date:"d/m/Y" }} {{ compra.hora_curso|time:"H:i" }}</td>
+                            <td>{{ compra.fecha_compra|date:"d/m/Y H:i" }}</td>
+                            <td>
+                                <span class="badge bg-success">{{ compra.get_estado_display }}</span>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="5" class="text-center text-muted">No hay compras registradas aún</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {% else %}
+        <div class="chart-container">
+            <div class="text-center">
+                <h4 style="color: #C93384;">📈 Esperando Primeras Ventas</h4>
+                <p>Las estadísticas aparecerán aquí cuando los usuarios comiencen a comprar cursos.</p>
+                <p><strong>💡 Tip:</strong> Agrega horarios a los cursos desde el panel de administración para que los usuarios puedan hacer compras.</p>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <script>
+        // Datos para los gráficos
+        const cursosNombres = {{ cursos_nombres|safe }};
+        const ventasNumeros = {{ ventas_numeros|safe }};
+        const meses = {{ meses|safe }};
+        const ventasPorMes = {{ ventas_por_mes|safe }};
+
+        // Gráfico de barras - Ventas por curso
+        const ctxCursos = document.getElementById('cursosChart').getContext('2d');
+        new Chart(ctxCursos, {
+            type: 'bar',
+            data: {
+                labels: cursosNombres,
+                datasets: [{
+                    label: 'Ventas',
+                    data: ventasNumeros,
+                    backgroundColor: [
+                        '#ff69b4',
+                        '#ff1493',
+                        '#ffc1ff',
+                        '#ff97d9',
+                        '#e44f9c',
+                        '#C93384'
+                    ],
+                    borderColor: '#C93384',
+                    borderWidth: 2,
+                    borderRadius: 10,
+                    borderSkipped: false,
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            stepSize: 1
+                        }
+                    }
+                }
+            }
+        });
+
+        // Gráfico de línea - Tendencia mensual
+        const ctxMensual = document.getElementById('ventasMensualChart').getContext('2d');
+        new Chart(ctxMensual, {
+            type: 'line',
+            data: {
+                labels: meses,
+                datasets: [{
+                    label: 'Ventas Mensuales',
+                    data: ventasPorMes,
+                    borderColor: '#ff69b4',
+                    backgroundColor: 'rgba(255, 105, 180, 0.1)',
+                    borderWidth: 3,
+                    fill: true,
+                    tension: 0.4,
+                    pointBackgroundColor: '#C93384',
+                    pointBorderColor: '#fff',
+                    pointBorderWidth: 2,
+                    pointRadius: 6
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            stepSize: 5
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+</body>
+</html>

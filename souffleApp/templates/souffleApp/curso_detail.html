@@ -41,10 +41,35 @@
             background: #fff0f6;
             border-radius: 1.2rem;
         }
+        .nav-btn {
+            color: #C93384;
+            background: #fff0f6;
+            border: none;
+            border-radius: 1rem;
+            padding: 0.7rem 2rem;
+            margin-left: 1rem;
+            font-weight: 700;
+            font-size: 1.1rem;
+            text-decoration: none;
+            box-shadow: 0 2px 8px rgba(210,145,188,0.08);
+            transition: background 0.2s, color 0.2s, transform 0.2s;
+        }
+        .nav-btn:hover {
+            background: #faaecb;
+            color: #fff;
+            transform: scale(1.05);
+            text-decoration: none;
+        }
     </style>
 </head>
 {% include 'souffleApp/whatsapp_button.html' %}
 <body>
+    <div class="container mt-3">
+        <div class="d-flex justify-content-end">
+            <a href="{% url 'home' %}" class="nav-btn">Volver al Inicio</a>
+        </div>
+    </div>
+
     <div class="container py-5">
         <div class="row justify-content-center">
             <div class="col-12 col-md-10 col-lg-8">
@@ -53,28 +78,63 @@
                     <div class="row align-items-start mt-4">
                         <div class="col-12 col-md-4 d-flex flex-column align-items-center mb-3 mb-md-0">
                             <img src="{{ curso.image.url }}" alt="{{ curso.title }}" class="img-fluid curso-img mb-3">
-                            <button class="btn btn-rosa w-100" type="button" onclick="document.getElementById('horarios-box').style.display='block'">Ver Horarios</button>
-                            <div id="compra-exitosa" style="display:none;" class="alert alert-success text-center mt-2">¡Compra exitosa!</div>
+                            
+                            {% if user.is_authenticated %}
+                                {% if horarios %}
+                                    <button class="btn btn-rosa w-100" type="button" onclick="document.getElementById('horarios-box').style.display='block'">Ver Horarios</button>
+                                {% else %}
+                                    <div class="alert alert-warning text-center w-100">
+                                        <strong>Sin horarios disponibles</strong><br>
+                                        Este curso no tiene horarios con cupos disponibles en este momento.
+                                    </div>
+                                {% endif %}
+                            {% else %}
+                                <a href="{% url 'login' %}?next={{ request.get_full_path }}" class="btn btn-rosa w-100">
+                                    Iniciar Sesión para Comprar
+                                </a>
+                            {% endif %}
+
+                            <!-- Mensajes de Django -->
+                            {% if messages %}
+                                {% for message in messages %}
+                                    <div class="alert alert-{{ message.tags }} text-center mt-2 w-100" role="alert">
+                                        {{ message }}
+                                    </div>
+                                {% endfor %}
+                            {% endif %}
+
+                            <!-- Horarios disponibles -->
+                            {% if horarios %}
                             <div id="horarios-box" style="display:none; margin-top:1em; width:100%;">
                                 <h4 class="text-center">Horarios disponibles</h4>
                                 <ul class="list-group mb-3">
+                                    {% for horario in horarios %}
                                     <li class="list-group-item d-flex justify-content-between align-items-center">
-                                        <span>10/09/2025 - 10:00 AM</span>
-                                        <span>Cupos: 5</span>
-                                        <button class="btn btn-rosa-claro btn-sm ms-2" onclick="mostrarCompraExitosa()">Comprar</button>
+                                        <div>
+                                            <strong>{{ horario.fecha|date:"d/m/Y" }} - {{ horario.hora|time:"H:i" }}</strong>
+                                        </div>
+                                        <div class="d-flex align-items-center">
+                                            <span class="me-2">
+                                                {% if horario.cupos > 0 %}
+                                                    <span class="badge bg-success">{{ horario.cupos }} cupo{{ horario.cupos|pluralize }}</span>
+                                                {% else %}
+                                                    <span class="badge bg-danger">Agotado</span>
+                                                {% endif %}
+                                            </span>
+                                            {% if horario.cupos > 0 %}
+                                                <form method="post" action="{% url 'comprar_curso' horario.id %}" style="display: inline;">
+                                                    {% csrf_token %}
+                                                    <button class="btn btn-rosa-claro btn-sm" type="submit">Comprar</button>
+                                                </form>
+                                            {% else %}
+                                                <button class="btn btn-secondary btn-sm" disabled>Agotado</button>
+                                            {% endif %}
+                                        </div>
                                     </li>
-                                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                                        <span>12/09/2025 - 4:00 PM</span>
-                                        <span>Cupos: 3</span>
-                                        <button class="btn btn-rosa-claro btn-sm ms-2" onclick="mostrarCompraExitosa()">Comprar</button>
-                                    </li>
-                                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                                        <span>15/09/2025 - 7:00 PM</span>
-                                        <span>Cupos: 2</span>
-                                        <button class="btn btn-rosa-claro btn-sm ms-2" onclick="mostrarCompraExitosa()">Comprar</button>
-                                    </li>
+                                    {% endfor %}
                                 </ul>
                             </div>
+                            {% endif %}
                         </div>
                         <div class="col-12 col-md-8">
                             <p><strong>Descripción:</strong><br>{{ curso.long_description|linebreaks }}</p>
@@ -89,14 +149,8 @@
             </div>
         </div>
     </div>
-<script>
-function mostrarCompraExitosa() {
-    var mensaje = document.getElementById('compra-exitosa');
-    mensaje.style.display = 'block';
-    setTimeout(function() {
-        mensaje.style.display = 'none';
-    }, 2500);
-}
-</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+</body>
+</html>
 </body>
 </html>
