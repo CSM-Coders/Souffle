@@ -6,7 +6,7 @@ from django.utils.http import url_has_allowed_host_and_scheme
 from urllib.parse import urlencode
 from .models import SouffleApp, Favorite, Horario, Compra
 from .models import Review
-from .forms import ReviewForm
+from .forms import ReviewForm, CursoForm
 from .decorators import admin_required, is_admin_user
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
@@ -421,3 +421,26 @@ def enviar_email_confirmacion(compra):
     except Exception as e:
         print(f"Error enviando email de confirmación: {e}")
         return False
+
+@admin_required
+def curso_edit(request, curso_id):
+    curso = get_object_or_404(SouffleApp, id=curso_id)
+    if request.method == 'POST':
+        form = CursoForm(request.POST, request.FILES, instance=curso)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Curso actualizado.')
+            return redirect('curso_detail', curso_id=curso.id)
+        else:
+            messages.error(request, 'Errores en el formulario. Verifica los campos.')
+    else:
+        form = CursoForm(instance=curso)
+    return render(request, 'souffleApp/curso_edit.html', {'form': form, 'curso': curso})
+
+@admin_required
+@require_POST
+def curso_delete(request, curso_id):
+    curso = get_object_or_404(SouffleApp, id=curso_id)
+    curso.delete()
+    messages.success(request, 'Curso eliminado.')
+    return redirect('home')

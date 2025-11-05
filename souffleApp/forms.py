@@ -1,7 +1,5 @@
 from django import forms
-
-# Convertir a ModelForm para Review
-from .models import Review
+from .models import Review, SouffleApp
 
 class ReviewForm(forms.ModelForm):
     class Meta:
@@ -18,4 +16,20 @@ class ReviewForm(forms.ModelForm):
         labels = {
             'content': '',
             'rating': ''
+        }
+
+class CursoForm(forms.ModelForm):
+    class Meta:
+        model = SouffleApp
+        fields = ['title', 'description', 'long_description', 'duration', 'learning_outcomes', 'materials', 'ingredients', 'price', 'image']
+        widgets = {
+            'title': forms.TextInput(attrs={'class': 'form-control'}),
+            'description': forms.TextInput(attrs={'class': 'form-control'}),
+            'long_description': forms.Textarea(attrs={'class': 'form-control', 'rows': 6}),
+            'duration': forms.TextInput(attrs={'class': 'form-control'}),
+            'learning_outcomes': forms.Textarea(attrs={'class': 'form-control', 'rows': 4}),
+            'materials': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
+            'ingredients': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
+            'price': forms.TextInput(attrs={'class': 'form-control'}),
+            'image': forms.ClearableFileInput(attrs={'class': 'form-control'}),
         }

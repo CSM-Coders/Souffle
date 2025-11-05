@@ -140,7 +140,7 @@ class Review(models.Model):
     curso = models.ForeignKey(SouffleApp, on_delete=models.CASCADE, related_name='reviews')
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='reviews')
     content = models.TextField(max_length=2000)
-    rating = models.PositiveSmallIntegerField(null=True, blank=True)  # opcional 1-5
+    rating = models.PositiveSmallIntegerField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -148,4 +148,4 @@ class Review(models.Model):
         ordering = ['-created_at']
 
     def __str__(self):
-        return f"Review by {self.user.username} on {self.curso.title}"
+        return f"Reseña de {self.user.username} — {self.curso.title}"
