@@ -90,7 +90,7 @@
                                 {% endif %}
                             {% else %}
                                 <a href="{% url 'login' %}?next={{ request.get_full_path }}" class="btn btn-rosa w-100">
-                                    Iniciar Sesión para Comprar
+                                    Ver horarios
                                 </a>
                             {% endif %}
 
@@ -145,6 +145,55 @@
                             <p><strong>Precio:</strong><br>{{ curso.price|linebreaks }}</p>
                         </div>
                     </div>
+                </div>
+            </div>
+        </div>
+
+    <!-- Sección de reseñas -->
+    <div class="container py-3">
+        <div class="row justify-content-center">
+            <div class="col-12 col-md-10 col-lg-8">
+                <div class="card p-3 mt-4" style="border-radius: 1rem;">
+                    <h4>Reseñas</h4>
+                    {% if user.is_authenticated %}
+                        <form method="post" action="{% url 'add_review' curso.id %}">
+                            {% csrf_token %}
+                            {{ review_form.content }}
+                            <div class="mt-2">
+                                {{ review_form.rating }}
+                            </div>
+                            <button type="submit" class="btn btn-rosa mt-2">Publicar reseña</button>
+                        </form>
+                    {% else %}
+                        <p><a href="{% url 'login' %}?next={{ request.get_full_path }}">Inicia sesión</a> para dejar una reseña.</p>
+                    {% endif %}
+
+                    <hr>
+                    {% if reviews %}
+                        {% for rev in reviews %}
+                            <div class="mb-3">
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <strong>{{ rev.user.username }}</strong>
+                                        {% if rev.rating %} — <span class="text-warning">{{ rev.rating }}/5</span>{% endif %}
+                                    </div>
+                                    <div>
+                                        <small class="text-muted">{{ rev.created_at|date:"d/m/Y H:i" }}</small>
+                                        {% if is_admin or rev.user == user %}
+                                            <form method="post" action="{% url 'delete_review' rev.id %}" style="display:inline;">
+                                                {% csrf_token %}
+                                                <button type="submit" class="btn btn-sm btn-outline-danger ms-2">Eliminar</button>
+                                            </form>
+                                         {% endif %}
+                                    </div>
+                                </div>
+                                <p class="mb-0">{{ rev.content|linebreaks }}</p>
+                            </div>
+                            <hr>
+                        {% endfor %}
+                    {% else %}
+                        <p class="text-muted">Aún no hay reseñas para este curso.</p>
+                    {% endif %}
                 </div>
             </div>
         </div>

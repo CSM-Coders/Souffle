@@ -134,3 +134,18 @@ class Compra(models.Model):
         ordering = ['-fecha_compra']
         verbose_name = "Compra"
         verbose_name_plural = "Compras"
+
+# Nueva clase: Review
+class Review(models.Model):
+    curso = models.ForeignKey(SouffleApp, on_delete=models.CASCADE, related_name='reviews')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='reviews')
+    content = models.TextField(max_length=2000)
+    rating = models.PositiveSmallIntegerField(null=True, blank=True)  # opcional 1-5
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"Review by {self.user.username} on {self.curso.title}"

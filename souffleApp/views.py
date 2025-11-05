@@ -5,6 +5,8 @@ from django.views.decorators.http import require_POST
 from django.utils.http import url_has_allowed_host_and_scheme
 from urllib.parse import urlencode
 from .models import SouffleApp, Favorite, Horario, Compra
+from .models import Review
+from .forms import ReviewForm
 from .decorators import admin_required, is_admin_user
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
@@ -186,14 +188,47 @@ def curso_detail(request, curso_id):
         favorite_ids = list(
             Favorite.objects.filter(user=request.user).values_list('curso_id', flat=True)
         )
+    # Obtener reseñas del curso
+    reviews = curso.reviews.select_related('user').all()
+    review_form = ReviewForm()
     
     context = {
         'curso': curso,
         'favorite_ids': favorite_ids,
         'horarios': horarios,
-        'is_admin': is_admin_user(request.user)
+        'is_admin': is_admin_user(request.user),
+        'reviews': reviews,
+        'review_form': review_form,
     }
     return render(request, 'souffleApp/curso_detail.html', context)
+
+@login_required
+@require_POST
+def add_review(request, curso_id):
+    curso = get_object_or_404(SouffleApp, id=curso_id)
+    form = ReviewForm(request.POST)
+    if form.is_valid():
+        review = form.save(commit=False)
+        review.user = request.user
+        review.curso = curso
+        review.save()
+        messages.success(request, 'Reseña añadida.')
+    else:
+        messages.error(request, 'No se pudo añadir la reseña. Verifica el contenido.')
+    return redirect('curso_detail', curso_id=curso.id)
+
+@login_required
+@require_POST
+def delete_review(request, review_id):
+    review = get_object_or_404(Review, id=review_id)
+    # Solo admin o autor pueden eliminar
+    if request.user.is_superuser or review.user == request.user:
+        curso_id = review.curso.id
+        review.delete()
+        messages.success(request, 'Reseña eliminada.')
+        return redirect('curso_detail', curso_id=curso_id)
+    messages.error(request, 'No tienes permiso para eliminar esta reseña.')
+    return redirect('curso_detail', curso_id=review.curso.id)
 
 
 @require_POST

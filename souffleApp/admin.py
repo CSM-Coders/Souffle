@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import SouffleApp, Horario, Compra
+from .models import SouffleApp, Horario, Compra, Review
 
 # Register your models here.
 
@@ -48,3 +48,16 @@ class HorarioAdmin(admin.ModelAdmin):
     def compras_realizadas(self, obj):
         return obj.compras.filter(estado='confirmada').count()
     compras_realizadas.short_description = 'Compras'
+
+# Registrar Review en admin
+
+@admin.register(Review)
+class ReviewAdmin(admin.ModelAdmin):
+    list_display = ('short_content', 'user', 'curso', 'rating', 'created_at')
+    list_filter = ('rating', 'created_at', 'curso')
+    search_fields = ('content', 'user__username', 'curso__title')
+    readonly_fields = ('created_at', 'updated_at')
+
+    def short_content(self, obj):
+        return (obj.content[:75] + '...') if len(obj.content) > 75 else obj.content
+    short_content.short_description = 'Contenido'
