@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse, JsonResponse
 from django.urls import reverse
 from django.views.decorators.http import require_POST
+from django.forms import inlineformset_factory
 from django.utils.http import url_has_allowed_host_and_scheme
 from urllib.parse import urlencode
 from .models import SouffleApp, Favorite, Horario, Compra
@@ -425,17 +426,24 @@ def enviar_email_confirmacion(compra):
 @admin_required
 def curso_edit(request, curso_id):
     curso = get_object_or_404(SouffleApp, id=curso_id)
+    # Usar un inline formset para Horario (fecha, hora, cupos)
+    HorarioFormSet = inlineformset_factory(SouffleApp, Horario, fields=('fecha', 'hora', 'cupos'), extra=1, can_delete=True)
+
     if request.method == 'POST':
         form = CursoForm(request.POST, request.FILES, instance=curso)
-        if form.is_valid():
+        formset = HorarioFormSet(request.POST, instance=curso)
+        if form.is_valid() and formset.is_valid():
             form.save()
-            messages.success(request, 'Curso actualizado.')
+            formset.save()
+            messages.success(request, 'Curso y horarios actualizados.')
             return redirect('curso_detail', curso_id=curso.id)
         else:
             messages.error(request, 'Errores en el formulario. Verifica los campos.')
     else:
         form = CursoForm(instance=curso)
-    return render(request, 'souffleApp/curso_edit.html', {'form': form, 'curso': curso})
+        formset = HorarioFormSet(instance=curso)
+
+    return render(request, 'souffleApp/curso_edit.html', {'form': form, 'curso': curso, 'formset': formset})
 
 @admin_required
 @require_POST

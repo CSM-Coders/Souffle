@@ -33,3 +33,14 @@ class CursoForm(forms.ModelForm):
             'price': forms.TextInput(attrs={'class': 'form-control'}),
             'image': forms.ClearableFileInput(attrs={'class': 'form-control'}),
         }
+
+
+class HorarioForm(forms.ModelForm):
+    class Meta:
+        model = __import__('souffleApp.models', fromlist=['Horario']).Horario
+        fields = ['fecha', 'hora', 'cupos']
+        widgets = {
+            'fecha': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
+            'hora': forms.TimeInput(attrs={'type': 'time', 'class': 'form-control'}),
+            'cupos': forms.NumberInput(attrs={'class': 'form-control', 'min': 0}),
+        }
